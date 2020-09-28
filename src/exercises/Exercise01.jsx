@@ -1,35 +1,27 @@
 import React from 'react';
+import {useLocation} from 'react-router-dom'
 
-const TOTAL_USERS = 6
 
+var i=0
 const Exercise01 = () => {
   const [users, setUsers] = React.useState([])
-
+  const currentPath = useLocation()
+  const TOTAL_USERS = 5
   /* THE FIX STARTS HERE */
   
-  /*
-  NOTE
-  -------
-  You can get the first 10 users by hitting https://jsonplaceholder.typicode.com/users.
-  For this exercise, assume that that option is NOT available and that you can only
-  use the https://jsonplaceholder.typicode.com/users?id=n URL (if we need to render
-  5 users, then we need to hit the URL 5 times).
-  */
-
-  React.useEffect(() => {
-    for(var i = 1; i < TOTAL_USERS; i++) {
-      // We fetch the user
-      fetch('https://jsonplaceholder.typicode.com/users?id=' + i)
-        .then(r => r.json()) // converts response to obj
-        .then(user => user[0]) // maps [{..}] to {..} since the API provides an array
-        .then(user => {
-          setUsers([
-            ...users,
-            user
-          ])
-        })
-    }
-  }, [])
+  async function fetchUsers() {
+    i++
+    if(i<=TOTAL_USERS){
+      let response = await fetch('https://jsonplaceholder.typicode.com/users?id=' + i).then(res => res.json())
+      setUsers(users.concat(response))
+  }
+  else {
+    i=0;
+  }
+}
+ React.useEffect(() => {
+  fetchUsers()
+  }, [users, currentPath])
 
   /* THE FIX ENDS HERE */
 
